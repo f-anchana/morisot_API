@@ -145,7 +145,7 @@ function getReservationByPerson($email) {
 function getAllReservations() //Fonction qui permet de récupérer toutes les réservations de la bdd
 {
     $db = dbConnect();
-    $requete = "SELECT * FROM reservation ORDER BY date DESC, horaire ASC";
+    $requete = "SELECT * FROM reservation ORDER BY date_choisi DESC, horaire_choisi ASC";
     $stmt = $db->prepare($requete);
     $stmt->execute();
     return $stmt->fetchAll();
@@ -165,13 +165,11 @@ function SendReservation($nom, $prenom, $email, $tel, $date, $horaire, $prix, $q
     $headers .= "Reply-To: $mailFrom\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
     
-    // Obtenir les trois premières lettres du nom
-$nom_tronque = substr($nom, 0, 3);
+$nom_tronque = strtoupper(substr($nom, 0, 3));
 
-// Composer le numéro de réservation
 $id = getLastReservation()['id_resa'];
 
-$num_reservation = "Numéro de réservation : " . $id . " - " . $nom_tronque;
+$num_reservation = "Numéro de réservation : " . $id . "#" . $nom_tronque;
 
         
 $message = "Bonjour " . $prenom . " " . $nom . ",\n\nNous vous confirmons votre réservation qui porte le numéro " . $num_reservation . " pour le " . $date . " à " . $horaire . ".\n\nVous avez réservé " . $quantite . " billet(s) pour un montant total de " . $prix . "€.\n\nNous vous remercions pour votre confiance et nous vous attendons avec impatience.\n\nCordialement,\n\nL'équipe du musée Morisot";

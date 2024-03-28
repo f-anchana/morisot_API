@@ -1,8 +1,11 @@
 <?php
 // <!-- switch case get, post, delete -->
+header("Access-Control-Allow-Methods: POST, GET, DELETE, OPTIONS");
 header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST");
+// header("Access-Control-Allow-Methods: POST, GET, DELETE, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+
+
 
 
 require_once 'model.php';
@@ -290,42 +293,67 @@ switch ($request_method) {
 
 
     case 'DELETE':
-        switch ($route_name) {
-            case '/supprimer_reservation':
-                // Récupérer les données JSON de la requête
-                $donnees = json_decode(file_get_contents('php://input'), true);
+    switch ($route_name) {
+        case '/supprimer_reservation':
+            // Récupérer les données JSON de la requête
+            $donnees = json_decode(file_get_contents('php://input'), true);
 
-                // Vérifier si les données sont valides et complètes
-                if ($donnees === null || !isset($donnees['id_reservation'])) {
-                    http_response_code(400);
-                    header('Content-Type: application/json');
-                    echo json_encode(array("message" => "Les données sont incorrectes ou incomplètes."));
-                    exit();
-                }
+            // Vérifier si les données sont valides et complètes
+            if ($donnees === null || !isset($donnees['id_resa'])) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                echo json_encode(array("message" => "Les données sont incorrectes ou incomplètes."));
+                exit();
+            }
 
-                // Supprimer la réservation avec l'ID spécifié
-                $success = deleteReservation($donnees['id_reservation']);
+            $success = deleteReservation($donnees['id_resa']);
 
-                // Vérifier si la suppression a réussi
-                if ($success) {
-                    // Envoi d'une réponse réussie
-                    http_response_code(200);
-                    header('Content-Type: application/json');
-                    echo json_encode(array("message" => "La réservation a été supprimée avec succès."));
-                } else {
-                    // Envoi d'une réponse indiquant que la réservation n'a pas été trouvée
-                    http_response_code(404);
-                    header('Content-Type: application/json');
-                    echo json_encode(array("message" => "La réservation n'a pas été trouvée."));
-                }
-                break;
+            // Vérifier si la suppression a réussi
+            if ($success) {
+                http_response_code(200);
+                header('Content-Type: application/json');
+                echo json_encode(array("message" => "La réservation a été supprimée avec succès."));
+            } else {
+                http_response_code(404);
+                header('Content-Type: application/json');
+                echo json_encode(array("message" => "La réservation n'a pas été trouvée."));
+            }
+            break;
+            
+            
+            case '/supprimer_utilisateur':
+            $donnees = json_decode(file_get_contents('php://input'), true);
 
-            default:
-                header("HTTP/1.0 404 Not Found");
-                echo json_encode(array("message" => "Page non trouvée"));
-                break;
-        }
-        break;
+            // Vérifier si les données sont valides et complètes
+            if ($donnees === null || !isset($donnees['id_user'])) {
+                http_response_code(400);
+                header('Content-Type: application/json');
+                echo json_encode(array("message" => "Les données sont incorrectes ou incomplètes."));
+                exit();
+            }
+
+            $success = deleteUser($donnees['id_user']);
+
+            // Vérifier si la suppression a réussi
+            if ($success) {
+                // Envoi d'une réponse réussie
+                http_response_code(200);
+                header('Content-Type: application/json');
+                echo json_encode(array("message" => "L'utilisateur a été supprimé avec succès."));
+            } else {
+                // Envoi d'une réponse indiquant que l'utilisateur n'a pas été trouvé
+                http_response_code(404);
+                header('Content-Type: application/json');
+                echo json_encode(array("message" => "L'utilisateur n'a pas été trouvé."));
+            }
+            break;
+
+        default:
+            header("HTTP/1.0 404 Not Found");
+            echo json_encode(array("message" => "Page non trouvée"));
+            break;
+    }
+    break;
 
 }
 ;
